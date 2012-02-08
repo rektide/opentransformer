@@ -1,0 +1,17 @@
+{
+	"name": "open:transformer",
+	"description": "helpers to compose CSS Transforms",
+	"version": "1.0.0",
+	"keywords": ["css transforms","3d","2d"],
+	"maintainers": [{
+		"name": "Matthew 'rektide' Fowle",
+		"email": "rektide@voodoowarez.com",
+		"web": "http://voodoowarez.com"
+	}],
+	"homepage": "http://voodoowarez.com/transformer",
+	"implements": ["CommonJS/Modules/1.0"],
+	"engines": { "node": ">=0.6.0" },
+	"dependencies": {
+	},
+	"repository": {"type": "git", "url": "http://git.voodoowarez.com/transformer.git"}
+}
