@@ -13,8 +13,8 @@ var templates2d= {
 	translateX: ["translateX(",null,") "],
 	translateY: ["translateY(",null,") "],
 	scale: ["scale(",null,",",null,") "],
-	scaleX: ["scaleX(",null,",",null,") "],
-	scaleY: ["scaleY(",null,",",null,") "],
+	scaleX: ["scaleX(",null,") "],
+	scaleY: ["scaleY(",null,") "],
 	rotate: ["rotate(",null,") "],
 	skewX: ["skewX(",null,") "],
 	skewY: ["skewY(",null,") "] }
