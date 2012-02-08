@@ -8,55 +8,75 @@ var transform_node= export.transform_node= function(parent){
 
 // 2D string templates http://www.w3.org/TR/css3-2d-transforms/#transform-functions
 var templates2d= {
-	matrix: ["matrix(",null,",",null,",",null,",", null,",",null,",",null,") ")],
-	translate: ["translate(",null,",",null,") "],
-	translateX: ["translateX(",null,") "],
-	translateY: ["translateY(",null,") "],
-	scale: ["scale(",null,",",null,") "],
-	scaleX: ["scaleX(",null,") "],
-	scaleY: ["scaleY(",null,") "],
-	rotate: ["rotate(",null,") "],
-	skewX: ["skewX(",null,") "],
-	skewY: ["skewY(",null,") "] }
+	matrix: 6,
+	translate: 2,
+	translateX: 1,
+	translateY: 1,
+	scale: 2,
+	scaleX: 1,
+	scaleY: 1,
+	rotate: 1,
+	skewX: 1,
+	skewY: 1 }
 
 // 3D string templates http://www.w3.org/TR/css3-3d-transforms/#transform-functions
 var templates3d= {
-	matrix3d: ["matrix3d(",null,",",null,",",null,",",null,",",
-		null,",",null,",",null,",",null,",",
-		null,",",null,",",null,",",null,",",
-		null,",",null,",",null,",",null,") "],
-	translate3d: ["translate3d(",null,",",null,",",null,") "],
-	translateZ: ["translateZ(",null,") "],
-	scale3d: ["scale3d(",null,",",null,",",null,") "],
-	scaleZ: ["scaleZ(",null,",",null,",",null,") "],
-	rotate3d: ["rotate3d(",null,",",null,",",null,",",null,")" ],
-	rotateZ: ["rotateZ(",null,") "],
-	perspective: ["perspective(",null,") "] }
+	matrix3d: 16,
+	translate3d: 3,
+	translateZ: 1,
+	scale3d: 3,
+	scaleZ: 1,
+	rotate3d: 4,
+	rotateZ: 1,
+	skew: 2,
+	perspective: 1]
 
 }
 
-var scaleNaturalToTemplate= [],
-  scaleTemplateToNatural= [],
-  maxArgs= 16 
-for(var i= 0; i< maxArgs; ++i){
-	scaleNaturalToTemplate[i]= 2*i+1 // your index MAY be prime
-	                                 // parents, do you know where your index is?
-	scaleTemplateToNatural[i]= (i+1)/2
+function _template(name,count,outputArray){
+	outputArray= outputArray||[]
+	outputArray.push("name(")
+	var j= 0
+	while(1){
+		outputArray.push(null)
+		if(j++ != count)
+			outputArray.push(",")
+		else
+			break
+	}
+	outputArray.push(") ")
+	return outputArray
 }
 
-function _template(form,args){
+function _invoker(arr,name){
+	var template_arguments_count= arr[name],
+	  template_end= 2*(template_arguments_count-1),
+	  template= _template(name,template_arguments_count)
 	return function(){
-		for(var i= 0; i< args; ++i)
-			form[scaleNaturalToTemplate[i]] = arguments[i]
-		return form.join("")
+		var i,
+		  j= -1, 
+		  max,
+		  outputArray
+		if(arguments.length >= template_arguments_count){
+			outputArray= arguments[template_arguments_count]
+			i= outputArray.length+1
+			outputArray.concat(template)
+		} else {
+			outputArray= []
+			i= 1
+		}
+		max= i+ template_end
+
+		for(;i < max; i+= 2){
+			outputArray[i]= arguments[++j]
+		}
+		return outputArray
 	}
 }
 
-for(var i in templates2d){
-	var template= templates2d[i]
-	exports[i]= _template(template,scaleTemplateToNatural[Math.floor(template.length))
+for(var name in templates2d){
+	exports[i]= _invoker(templates2d,name)
 }
-for(var i in templates3d){
-	var template= templates3d[i]
-	exports[i]= _template(template,scaleTemplateToNatural[Math.floor(template.length))
+for(var name in templates3d){
+	exports[i]= _invoker(templates3d,name)
 }
