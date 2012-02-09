@@ -5,6 +5,19 @@ var transform_node= export.transform_node= function(parent){
 	this.parent= parent||null
 }
 
+transform_node.prototype.transform= function(outputArray){
+	outputArray= outputArray||[]
+	if(this.parent)
+		this.parent.transform(outputArray)
+	for(var i in this.transforms){
+		var transform= this.transforms[i]
+		if(typeof transform == "function")
+			transform.apply(this,outputArray)
+		else
+			outputArray.push(transform)
+	}
+	return outputArray.join("")
+}
 
 // 2D string templates http://www.w3.org/TR/css3-2d-transforms/#transform-functions
 var templates2d= {
