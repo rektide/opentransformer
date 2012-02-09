@@ -1,6 +1,6 @@
 var inherits= require("inherits")
 
-var transform_node= export.transform_node= export.node= function(parent){
+var transform_node= exports.transform_node= exports.node= function(parent){
 	if(!(this instanceof transform_node))
 		return Object.create(transform_node,{parent:parent})
 	this.transforms= []
@@ -11,8 +11,8 @@ function aggregatingVisitor(opts){
 	var arr= (opt&&opts.output)||[],
 	  f= function(current,visit_opts){
 		arr.concat(current)
-	  }
-	f.result= functon(){
+	}
+	f.result= function(){
 		return arr
 	}
 	return f
@@ -50,13 +50,13 @@ transform_node.prototype.transform= function(opts){
 	return result
 }
 
-var drawable_node= export.drawable_node= export.drawable= function(parent){
+var drawable_node= exports.drawable_node= exports.drawable= function(parent){
 	if(!(this instanceof drawable_node))
 		return Object.create(drawable_node,{parent:parent})
 	this.renderStack= []
 }
 
-drawable_node.prototype.draw(opts){
+drawable_node.prototype.draw= function(opts){
 	opts= opts||{}
 	opts.target= opts.target||"renderStack"
 	opts.visitor= opts.visitor||aggregatingVisitor()
@@ -88,9 +88,7 @@ var templates3d= {
 	rotate3d: 4,
 	rotateZ: 1,
 	skew: 2,
-	perspective: 1]
-
-}
+	perspective: 1 }
 
 function _template(name,count,outputArray){
 	outputArray= outputArray||[]
@@ -134,8 +132,8 @@ function _invoker(arr,name){
 }
 
 for(var name in templates2d){
-	exports[i]= _invoker(templates2d,name)
+	exports[name]= _invoker(templates2d,name)
 }
 for(var name in templates3d){
-	exports[i]= _invoker(templates3d,name)
+	exports[name]= _invoker(templates3d,name)
 }
