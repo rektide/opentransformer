@@ -1,22 +1,42 @@
-var transform_node= export.transform_node= function(parent){
+var inherits= require("inherits"),
+  empty= {}
+
+var transform_node= export.transform_node= export.node= function(parent){
 	if(!(this instanceof transform_node))
-		return Object.create(transform_node
+		return Object.create(transform_node,{parent:parent})
 	this.transforms= []
 	this.parent= parent||null
 }
 
-transform_node.prototype.transform= function(outputArray){
+function concatVisitor(){
+	this.outputArray= []
+	return function(){
+		
+	}
+}
+
+transform_node.prototype.transform= function(outputArray,opts){
+	opts= opts||empty
+
 	outputArray= outputArray||[]
 	if(this.parent)
-		this.parent.transform(outputArray)
+		this.parent.transform(outputArray,opts)
 	for(var i in this.transforms){
 		var transform= this.transforms[i]
 		if(typeof transform == "function")
-			transform.apply(this,outputArray)
+			outputArray.concat(transform.apply(this,outputArray,opts))
 		else
 			outputArray.push(transform)
 	}
 	return outputArray.join("")
+}
+
+var drawable_node= export.drawable_node= export.drawable= function(parent){
+	if(!(this instanceof drawable_node))
+		return Object.create(drawable_node,{parent:parent})
+}
+
+drawable_node.prototype.draw(){
 }
 
 // 2D string templates http://www.w3.org/TR/css3-2d-transforms/#transform-functions
