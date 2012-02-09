@@ -58,9 +58,9 @@ var drawable_node= export.drawable_node= export.drawable= function(parent){
 
 drawable_node.prototype.draw(opts){
 	opts= opts||{}
-	opts.target= "renderStack"
-	opts.visitor= aggregatingVisitor()
-	opts.noParent= true
+	opts.target= opts.target||"renderStack"
+	opts.visitor= opts.visitor||aggregatingVisitor()
+	opts.noParent= opts.noParent||true
 	var destination= opts.destination||"transforms"
 	this[destination]= this.transform(opts)
 }
