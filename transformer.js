@@ -33,7 +33,7 @@ transform_node.prototype.transform= function(opts){
 	  target= this[targetName],
 	  visitor= opts.visitor= opts.visitor||concatVisitor(opts)
 
-	if(this.parent)
+	if(!opts.noParent && this.parent)
 		this.parent.transform(opts)
 	for(var i in target){
 		var transform= target[i]
@@ -53,15 +53,15 @@ transform_node.prototype.transform= function(opts){
 var drawable_node= export.drawable_node= export.drawable= function(parent){
 	if(!(this instanceof drawable_node))
 		return Object.create(drawable_node,{parent:parent})
-
 	this.renderStack= []
 }
 
 drawable_node.prototype.draw(opts){
 	opts= opts||{}
 	opts.target= "renderStack"
-	var visitor= opts.visitor= aggregatingVisitor(),
-	  destination= opts.destination||"transforms"
+	opts.visitor= aggregatingVisitor()
+	opts.noParent= true
+	var destination= opts.destination||"transforms"
 	this[destination]= this.transform(opts)
 }
 
