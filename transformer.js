@@ -1,5 +1,4 @@
-var inherits= require("inherits"),
-  empty= {}
+var inherits= require("inherits")
 
 var transform_node= export.transform_node= export.node= function(parent){
 	if(!(this instanceof transform_node))
@@ -8,35 +7,62 @@ var transform_node= export.transform_node= export.node= function(parent){
 	this.parent= parent||null
 }
 
-function concatVisitor(){
-	this.outputArray= []
-	return function(){
-		
+function aggregatingVisitor(opts){
+	var arr= (opt&&opts.output)||[],
+	  f= function(current,visit_opts){
+		arr.concat(current)
+	  }
+	f.result= functon(){
+		return arr
 	}
+	return f
 }
 
-transform_node.prototype.transform= function(outputArray,opts){
-	opts= opts||empty
-
-	outputArray= outputArray||[]
-	if(this.parent)
-		this.parent.transform(outputArray,opts)
-	for(var i in this.transforms){
-		var transform= this.transforms[i]
-		if(typeof transform == "function")
-			outputArray.concat(transform.apply(this,outputArray,opts))
-		else
-			outputArray.push(transform)
+function concatVisitor(opts){
+	var f= aggregatingVisitor(opts),
+	  aggResult= f.result
+	f.result= function(){
+		return aggResult().join("")
 	}
-	return outputArray.join("")
+	return f
+}
+
+transform_node.prototype.transform= function(opts){
+	opts= opts||{}
+	var targetName= opts.target||"transforms",
+	  target= this[targetName],
+	  visitor= opts.visitor= opts.visitor||concatVisitor(opts)
+
+	if(this.parent)
+		this.parent.transform(opts)
+	for(var i in target){
+		var transform= target[i]
+		if(typeof transform == "function")
+			transform= transform.apply(this,opts)
+		visitor(transform,opts)
+	}
+
+	var result= visitor.result
+	if(!result)
+		return visitor
+	if(typeof result == "function")
+		return visitor.result()
+	return result
 }
 
 var drawable_node= export.drawable_node= export.drawable= function(parent){
 	if(!(this instanceof drawable_node))
 		return Object.create(drawable_node,{parent:parent})
+
+	this.renderStack= []
 }
 
-drawable_node.prototype.draw(){
+drawable_node.prototype.draw(opts){
+	opts= opts||{}
+	opts.target= "renderStack"
+	var visitor= opts.visitor= aggregatingVisitor(),
+	  destination= opts.destination||"transforms"
+	this[destination]= this.transform(opts)
 }
 
 // 2D string templates http://www.w3.org/TR/css3-2d-transforms/#transform-functions
