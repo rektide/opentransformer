@@ -1,5 +1,5 @@
 {
-	"name": "open:transformer",
+	"name": "opentransformer",
 	"description": "helpers to compose CSS Transforms",
 	"version": "1.0.0",
 	"keywords": ["css transforms","3d","2d"],
