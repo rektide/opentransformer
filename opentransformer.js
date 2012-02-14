@@ -1,6 +1,6 @@
 var inherits= require("inherits")
 
-var transform_node= exports.transform_node= exports.node= function(parent){
+var transform_node= exports.transform_node= exports.node= function(parent,opts){
 	if(!(this instanceof transform_node))
 		return Object.create(transform_node,{parent:parent})
 	this.transforms= []
@@ -33,14 +33,14 @@ transform_node.prototype.transform= function(opts){
 	  target= this[targetName],
 	  visitor= opts.visitor= opts.visitor||concatVisitor(opts)
 
-	if(!opts.noParent && this.parent)
-		this.parent.transform(opts)
 	for(var i in target){
 		var transform= target[i]
 		if(typeof transform == "function")
 			transform= transform.apply(this,opts)
 		visitor(transform,opts)
 	}
+	if(!opts.noParent && this.parent)
+		this.parent.transform(opts)
 
 	var result= visitor.result
 	if(!result)
