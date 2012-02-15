@@ -8,7 +8,7 @@ var transform_node= exports.transform_node= exports.node= function(parent,opts){
 }
 
 function aggregatingVisitor(opts){
-	var arr= (opt&&opts.output)||[],
+	var arr= (opts&&opts.output)||[],
 	  f= function(current,visit_opts){
 		arr.concat(current)
 	}
@@ -30,7 +30,7 @@ function concatVisitor(opts){
 transform_node.prototype.transform= function(opts){
 	opts= opts||{}
 	var targetName= opts.target||"transforms",
-	  target= this[targetName],
+	  target= this[targetName]||[],
 	  visitor= opts.visitor= opts.visitor||concatVisitor(opts)
 
 	for(var i in target){
@@ -55,6 +55,7 @@ var drawable_node= exports.drawable_node= exports.drawable= function(parent){
 		return Object.create(drawable_node,{parent:parent})
 	this.renderStack= []
 }
+inherits(drawable_node,transform_node)
 
 drawable_node.prototype.draw= function(opts){
 	opts= opts||{}
@@ -92,11 +93,11 @@ var templates3d= {
 
 function _template(name,count,outputArray){
 	outputArray= outputArray||[]
-	outputArray.push("name(")
+	outputArray.push(name,"(")
 	var j= 0
 	while(1){
 		outputArray.push(null)
-		if(j++ != count)
+		if(++j != count)
 			outputArray.push(",")
 		else
 			break
@@ -114,7 +115,7 @@ function _invoker(arr,name){
 		  j= -1, 
 		  max,
 		  outputArray
-		if(arguments.length >= template_arguments_count){
+		if(arguments.length > template_arguments_count){
 			outputArray= arguments[template_arguments_count]
 			i= outputArray.length+1
 			outputArray.concat(template)

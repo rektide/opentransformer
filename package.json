@@ -2,6 +2,7 @@
 	"name": "opentransformer",
 	"description": "helpers to compose CSS Transforms",
 	"version": "1.0.0",
+	"main": "opentransformer",
 	"keywords": ["css transforms","3d","2d"],
 	"maintainers": [{
 		"name": "Matthew 'rektide' Fowle",
