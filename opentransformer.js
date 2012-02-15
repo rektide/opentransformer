@@ -10,7 +10,7 @@ var transform_node= exports.transform_node= exports.node= function(parent,opts){
 function aggregatingVisitor(opts){
 	var arr= (opts&&opts.output)||[],
 	  f= function(current,visit_opts){
-		arr.concat(current)
+		arr= arr.concat(current)
 	}
 	f.result= function(){
 		return arr
@@ -93,7 +93,7 @@ var templates3d= {
 
 function _template(name,count,outputArray){
 	outputArray= outputArray||[]
-	outputArray.push(name,"(")
+	outputArray.push(name+"(")
 	var j= 0
 	while(1){
 		outputArray.push(null)
@@ -120,12 +120,12 @@ function _invoker(arr,name){
 			i= outputArray.length+1
 			outputArray.concat(template)
 		} else {
-			outputArray= []
+			outputArray= template
 			i= 1
 		}
 		max= i+ template_end
 
-		for(;i < max; i+= 2){
+		for(;i <= max; i+= 2){
 			outputArray[i]= arguments[++j]
 		}
 		return outputArray
