@@ -18,6 +18,21 @@ function aggregatingVisitor(opts){
 	return f
 }
 
+function aggregatingCombinantVisitor(opts){
+	var arr= (opts&&opts.output)||[],
+	  f= function(current,opts){
+		if(current===undefined)
+			return
+		if(current.constructor == Array)
+			current= current.join("")
+		arr.push(current)
+	}
+	f.result= function(){
+		return arr
+	}
+	return f
+}
+
 function concatVisitor(opts){
 	var f= aggregatingVisitor(opts),
 	  aggResult= f.result
@@ -30,8 +45,17 @@ function concatVisitor(opts){
 transform_node.prototype.transform= function(opts){
 	opts= opts||{}
 	var targetName= opts.target||"transforms",
-	  target= this[targetName]||[],
+	  target= this[targetName],
+	  drawName= opts.drawName||"draw",
+	  drawer= this[drawName],
 	  visitor= opts.visitor= opts.visitor||concatVisitor(opts)
+
+	if(!target && drawer){
+		drawer.call(this)
+		target= this[targetName]
+	}
+	if(!target)
+		target= []
 
 	for(var i in target){
 		var transform= target[i]
@@ -60,7 +84,7 @@ inherits(drawable_node,transform_node)
 drawable_node.prototype.draw= function(opts){
 	opts= opts||{}
 	opts.target= opts.target||"renderStack"
-	opts.visitor= opts.visitor||aggregatingVisitor()
+	opts.visitor= opts.visitor||aggregatingCombinantVisitor()
 	opts.noParent= opts.noParent||true
 	var destination= opts.destination||"transforms"
 	this[destination]= this.transform(opts)
