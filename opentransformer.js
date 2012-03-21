@@ -1,10 +1,10 @@
 var inherits= require("inherits")
 
-var transform_node= exports.transform_node= exports.node= function(parent,opts){
+var transform_node= exports.transform_node= exports.node= function(opts){
 	if(!(this instanceof transform_node))
 		return Object.create(transform_node,{parent:parent})
-	this.transforms= []
-	this.parent= parent||null
+	this.transforms= null
+	this.parent= opts.parent||null
 }
 
 function aggregatingVisitor(opts){
@@ -74,10 +74,11 @@ transform_node.prototype.transform= function(opts){
 	return result
 }
 
-var drawable_node= exports.drawable_node= exports.drawable= function(parent){
+var drawable_node= exports.drawable_node= exports.drawable= function(opts){
 	if(!(this instanceof drawable_node))
-		return Object.create(drawable_node,{parent:parent})
-	this.renderStack= []
+		return Object.create(drawable_node,opts)
+	drawable_node.super.call(this,opts)
+	this.renderStack= null
 }
 inherits(drawable_node,transform_node)
 
@@ -93,13 +94,13 @@ drawable_node.prototype.draw= function(opts){
 // 2D string templates http://www.w3.org/TR/css3-2d-transforms/#transform-functions
 var templates2d= {
 	matrix: 6,
+	rotate: 1,
 	translate: 2,
 	translateX: 1,
 	translateY: 1,
 	scale: 2,
 	scaleX: 1,
 	scaleY: 1,
-	rotate: 1,
 	skewX: 1,
 	skewY: 1 }
 
@@ -161,4 +162,11 @@ for(var name in templates2d){
 }
 for(var name in templates3d){
 	exports[name]= _invoker(templates3d,name)
+}
+
+templates2d.rotate= 3
+var minRotate= exports.rotate,
+  fullRotate= _invoker(templates2d,"rotate")
+exports.rotate= function(a,b,c){
+	return b||c ? fullRotate(a,b,c) : minRotate(a)
 }
